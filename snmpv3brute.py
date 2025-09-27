@@ -362,7 +362,7 @@ def main():
       # Print results header
       print(color.BOLD+"\nResults:"+color.END)
       print(" ID {} IP address {} Username {} Alg       Password".format(" "*(1+int(lenID)-2)," "*(1+(int(lenIP))-10)," "*(1+(int(lenUN))-8)))
-      print("{} {} {} {} {}".format("-"*(int(lenID)+2),"-"*(int(lenIP)+2),"-"*(int(lenUN)+2),"-"*9,"-"*10))
+      print("{} {} {} {} {}".format("-"*(int(lenID)+2),"-"*(int(lenIP)+2),"-"*(int(lenUN)+2),"-"*9,"-"*20))
 
    # Process tasks and print results
    for t in taskList:
