@@ -290,6 +290,7 @@ def main():
    global ipad_int
    global opad_int
    global l
+   global hashLength
 
    # Constants
    ipad          = '36'*64
@@ -298,6 +299,18 @@ def main():
    l             = 1048576
    ipad_int      = int(ipad, 16)
    opad_int      = int(opad, 16)
+
+   hashLength = {
+      'sha-512': (96,96),
+      'sha-384': (64,64),
+      'sha-256': (48,48),
+      'sha-224': (32,32),
+      'sha': (24,24),
+      'md5': (24,24),
+      'rfc3414': (24,24),
+      'rfc7860': (32,96),
+      'all': (24,96),
+   }
 
    ### Argparse setup for CLI options
    # Argparse definitions
@@ -377,6 +390,11 @@ def main():
 
       if args.hashes:
         extract_hashes()
+
+      # Check hash length
+      if not (hashLength[hashType][0] <= msgAuthenticationParametersLength <= hashLength[hashType][1]):
+         keepTrying = False
+         passwordFound = False
 
       # Check single words first (either supplied with -W or added by multi-task processing)
       if (len(singleWord) > 0) and keepTrying and not args.hashes:
