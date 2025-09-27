@@ -405,7 +405,7 @@ def main():
                endTime = time.time()
                # Print current task findings
                print(" {} {} {} {} {} {} ".format(str(t[6]).zfill(2)," "*(int(lenID)-len(str(t[6]).zfill(2))+1),t[0]," "*(int(lenIP)-len(t[0])+1),t[2]," "*(int(lenUN)-len(t[2])+1)), end='') 
-               print((color.GREEN+"{}{}"+color.END+" ({:.2f}s)").format(passwordFound[1].ljust(7+3),str(passwordFound[0]),endTime-startTime)) 
+               print((color.BLUE+"{}{}"+color.END+" ({:.2f}s)").format(passwordFound[1].ljust(7+3),str(passwordFound[0]),endTime-startTime)) 
                break
 
       # Check words in wordlist, if supplied
