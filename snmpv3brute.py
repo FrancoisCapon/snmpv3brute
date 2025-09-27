@@ -167,7 +167,7 @@ def check_password(passphrase):
 
    data = ((passphrase * (l//len(passphrase)+1))[:l]).encode('latin-1')
 
-   if hashType in {'sha-512', 'all'}:
+   if hashType in {'sha-512', 'all', 'rfc7860'}:
       n=96
 
       # Calculate AuthKey and extendedAuthKey
@@ -183,7 +183,7 @@ def check_password(passphrase):
       if hm[0:n] == msgAuthenticationParameters:
          return([passphrase,"SHA-512"])
 
-   if hashType in {'sha-384', 'all'}:
+   if hashType in {'sha-384', 'all', 'rfc7860'}:
       n=64
 
       # Calculate AuthKey and extendedAuthKey
@@ -199,7 +199,7 @@ def check_password(passphrase):
       if hm[0:n] == msgAuthenticationParameters:
          return([passphrase,"SHA-384"])
 
-   if hashType in {'sha-256', 'all'}:
+   if hashType in {'sha-256', 'all', 'rfc7860'}:
       n=48
 
       # Calculate AuthKey and extendedAuthKey
@@ -215,14 +215,14 @@ def check_password(passphrase):
       if hm[0:n] == msgAuthenticationParameters:
          return([passphrase,"SHA-256"])
 
-   if hashType in {'sha-224', 'all'}:
+   if hashType in {'sha-224', 'all', 'rfc7860'}:
       n=32
 
       # Calculate AuthKey and extendedAuthKey
       sha224_digest1 = hashlib.sha224(data).digest()
 
       sha224_AuthKey = hashlib.sha224(sha224_digest1+E+sha224_digest1).hexdigest()
-
+      
       tmp_wholeMsgMod = unhexlify(wholeMsg.replace(msgAuthenticationParameters,'0'*n))
 
       hm = hmac.new(unhexlify(sha224_AuthKey), tmp_wholeMsgMod, digestmod=hashlib.sha224).hexdigest()
@@ -231,7 +231,7 @@ def check_password(passphrase):
       if hm[0:n] == msgAuthenticationParameters:
          return([passphrase,"SHA-224"])
 
-   if hashType in {'sha', 'all'}:
+   if hashType in {'sha', 'all', 'rfc3414'}:
       # Calculate AuthKey and extendedAuthKey
       sha_digest1 = hashlib.sha1(data).digest()
       sha_AuthKey = hashlib.sha1(sha_digest1+E+sha_digest1).hexdigest()
@@ -248,7 +248,7 @@ def check_password(passphrase):
       if sha_hashK2[0:24] == msgAuthenticationParameters:
          return([passphrase,"SHA"])
 
-   if hashType in {'md5', 'all'}:
+   if hashType in {'md5', 'all', 'rfc3414'}:
       # Calculate AuthKey and extendedAuthKey
       md5_digest1 = hashlib.md5(data).digest()
       md5_AuthKey = hashlib.md5(md5_digest1+E+md5_digest1).hexdigest()
@@ -303,7 +303,7 @@ def main():
    # Argparse definitions
    usage='snmpv3brute.py - SNMPv3 Authentication Bruteforcer\n\nSNMPv3 authentication can be bruteforced to determine the cleartext password. This program can extract the required SNMP information from a packet capture file, or you can manually specify the required information using the "-m" option.\n\nTo use the -m option, get the data for the variables from a SNMPv3 packet in Wireshark. For msgAuthoritativeEngineID and msgAuthenticationParameters, right click on the packet field of the same name and select "Copy as Hex Stream". For wholeMsg, right click on Simple Network Management Protocol, and select "Copy as Hex Stream".\n\nExample: snmpv3brute.py -W snmp_password -m 80001f888056417b0bd201d85d00000000 a34b57081ff0cef821e4da43 3081dc020103301002043cabfa64020205c0040103020103043f303d041180001f888056417b0bd201d85d00000000020101020200a20409736e6d705f75736572040ca34b57081ff0cef821e4da430408bec2e5f547aaa89c048183dfe158807f83a660d37264c7f397a8a42c237988ee829c52b003f6d772df683c51acb56bb327a36ee590e1d65c9466e9d18a48e80539e5fff12006d2fba6bc61756956285b84bafe773b6359d2273db3b6e49f89a6609a86ac5f440d4bfa55b17af5a81db1fa0030402bba9befad240addc41d9b394d0fb2c4a3f5ffde3730485cdaf6'
    parser = argparse.ArgumentParser(description=usage,formatter_class=argparse.RawTextHelpFormatter)
-   parser.add_argument("-a", help="Use md5, sha, or both for hashing algorithm (default: %(default)s)", nargs='?', choices=['md5','sha','sha-224','sha-256','sha-384','sha-512','all'], default='all',const='all',dest='hashType', type=str.lower)
+   parser.add_argument("-a", help="Use md5, sha, or both for hashing algorithm (default: %(default)s)", nargs='?', choices=['md5','sha','sha-224','sha-256','sha-384','sha-512','all','rfc3414','rfc7860'], default='all',const='all',dest='hashType', type=str.lower)
    parser.add_argument("-w", help="Specify wordlist to use (1 word per line)",dest='wordlist')
    parser.add_argument("-W", help="Specify words to use as password for testing",dest='singleWord',nargs='*',default=[])
    parser.add_argument("-e", help="Extract hashes in hashcat format",dest='hashes', action='store_true')
