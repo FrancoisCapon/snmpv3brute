@@ -164,7 +164,7 @@ def check_password(passphrase):
    data = ((passphrase * (l//len(passphrase)+1))[:l]).encode('latin-1')
 
    n = 96
-   if hashType in {'sha-512', 'all', 'rfc7860'} and msgAuthenticationParametersLength == n:
+   if msgAuthenticationParametersLength == n and hashType in {'sha-512', 'all', 'rfc7860'}:
 
       # Calculate AuthKey and extendedAuthKey
       sha512_digest1 = hashlib.sha512(data).digest()
@@ -178,7 +178,7 @@ def check_password(passphrase):
          return([passphrase,"SHA-512"])
 
    n = 64 
-   if hashType in {'sha-384', 'all', 'rfc7860'} and msgAuthenticationParametersLength == n:
+   if msgAuthenticationParametersLength == n and hashType in {'sha-384', 'all', 'rfc7860'}:
 
       # Calculate AuthKey and extendedAuthKey
       sha384_digest1 = hashlib.sha384(data).digest()
@@ -194,7 +194,7 @@ def check_password(passphrase):
          return([passphrase,"SHA-384"])
 
    n = 48
-   if hashType in {'sha-256', 'all', 'rfc7860'} and msgAuthenticationParametersLength == n:
+   if msgAuthenticationParametersLength == n and hashType in {'sha-256', 'all', 'rfc7860'}:
 
       # Calculate AuthKey and extendedAuthKey
       sha256_digest1 = hashlib.sha256(data).digest()
@@ -210,7 +210,7 @@ def check_password(passphrase):
          return([passphrase,"SHA-256"])
 
    n = 32
-   if hashType in {'sha-224', 'all', 'rfc7860'} and msgAuthenticationParametersLength == n:
+   if msgAuthenticationParametersLength == n and hashType in {'sha-224', 'all', 'rfc7860'}:
 
       # Calculate AuthKey and extendedAuthKey
       sha224_digest1 = hashlib.sha224(data).digest()
@@ -226,7 +226,7 @@ def check_password(passphrase):
          return([passphrase,"SHA-224"])
 
    n = 24 
-   if hashType in {'sha', 'all', 'rfc3414'} and msgAuthenticationParametersLength == n:
+   if msgAuthenticationParametersLength == n and hashType in {'sha', 'all', 'rfc3414'}:
 
       # Calculate AuthKey and extendedAuthKey
       sha_digest1 = hashlib.sha1(data).digest()
@@ -244,7 +244,7 @@ def check_password(passphrase):
       if sha_hashK2[0:24] == msgAuthenticationParameters:
          return([passphrase,"SHA"])
 
-   if hashType in {'md5', 'all', 'rfc3414'} and msgAuthenticationParametersLength == n:
+   if msgAuthenticationParametersLength == n and hashType in {'md5', 'all', 'rfc3414'}:
 
       # Calculate AuthKey and extendedAuthKey
       md5_digest1 = hashlib.md5(data).digest()
