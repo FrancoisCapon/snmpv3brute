@@ -363,7 +363,6 @@ def main():
       for i in [24, 32, 48, 64, 96]:
          wholeMsgMod[i] = unhexlify(wholeMsg.replace(msgAuthenticationParameters,'0'*i))
       msgAuthenticationParametersLength = len(msgAuthenticationParameters)
-
       E = unhexlify(msgAuthoritativeEngineID)
 
       startTime = time.time()
