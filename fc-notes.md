@@ -79,6 +79,8 @@ snmpv3.pcapng
 
 ## multi
 
+```
+
 Looking for SNMPv3 packets in test_files/snmpv3_multi_master.pcapng...
 
 Tasks to be processed:
@@ -114,4 +116,21 @@ Results:
  06   172.16.245.1   snmp_user    SHA   snmp_password (0.01s)
  07   172.16.245.1   admin        SHA   admin123 (18.51s)
 
+-a rfc3414
+Results:
+ ID   IP address     Username     Alg   Password
+---- -------------- ------------ ----- ----------
+ 01   172.16.240.1   snmp_user    SHA   snmp_password (3.80s)
+ 02   172.16.241.1   snmp_user    SHA   private1 (3.75s)
+ 03   172.16.242.1   snmp_user2   MD5   private1 (0.01s)
+ 04   172.16.243.1   snmp_user    N/A   Not found (7.03s)
+ 05   172.16.244.1   snmp_user4   SHA   password (5.50s)
+ 06   172.16.245.1   snmp_user    SHA   snmp_password (0.00s)
+ 07   172.16.245.1   admin        SHA   admin123 (5.78s)
+
+```
+
  facteur 3 à 4
+
+
+  Tu verras que digest() est environ 10 à 30 % plus rapide, selon la machine.

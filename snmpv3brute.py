@@ -171,10 +171,10 @@ def check_password(passphrase):
 
       sha512_AuthKey = hashlib.sha512(sha512_digest1+E+sha512_digest1).digest()
 
-      hm = hmac.new(sha512_AuthKey, wholeMsgMod[n], digestmod=hashlib.sha512).hexdigest()
+      hm = hmac.new(sha512_AuthKey, wholeMsgMod[n], digestmod=hashlib.sha512).digest()
 
       # Check if calculated value equals msgAuthenticationParameters (48*2)
-      if hm[0:n] == msgAuthenticationParameters:
+      if hm[0:n//2] == msgAuthenticationParametersBytes:
          return([passphrase,"SHA-512"])
 
    n = 64 
@@ -187,10 +187,10 @@ def check_password(passphrase):
 
       tmp_wholeMsgMod = unhexlify(wholeMsg.replace(msgAuthenticationParameters,'0'*n))
 
-      hm = hmac.new(unhexlify(sha384_AuthKey), tmp_wholeMsgMod, digestmod=hashlib.sha384).hexdigest()
+      hm = hmac.new(unhexlify(sha384_AuthKey), tmp_wholeMsgMod, digestmod=hashlib.sha384).digest()
 
       # Check if calculated value equals msgAuthenticationParameters (32*2)
-      if hm[0:n] == msgAuthenticationParameters:
+      if hm[0:n//2] == msgAuthenticationParametersBytes:
          return([passphrase,"SHA-384"])
 
    n = 48
@@ -203,10 +203,10 @@ def check_password(passphrase):
 
       tmp_wholeMsgMod = unhexlify(wholeMsg.replace(msgAuthenticationParameters,'0'*n))
 
-      hm = hmac.new(unhexlify(sha256_AuthKey), tmp_wholeMsgMod, digestmod=hashlib.sha256).hexdigest()
+      hm = hmac.new(unhexlify(sha256_AuthKey), tmp_wholeMsgMod, digestmod=hashlib.sha256).digest()
 
       # Check if calculated value equals msgAuthenticationParameters (24*2)
-      if hm[0:n] == msgAuthenticationParameters:
+      if hm[0:n//2] == msgAuthenticationParametersBytes:
          return([passphrase,"SHA-256"])
 
    n = 32
@@ -219,13 +219,13 @@ def check_password(passphrase):
       
       tmp_wholeMsgMod = unhexlify(wholeMsg.replace(msgAuthenticationParameters,'0'*n))
 
-      hm = hmac.new(unhexlify(sha224_AuthKey), tmp_wholeMsgMod, digestmod=hashlib.sha224).hexdigest()
+      hm = hmac.new(unhexlify(sha224_AuthKey), tmp_wholeMsgMod, digestmod=hashlib.sha224).digest()
 
       # Check if calculated value equals msgAuthenticationParameters (16*2)
-      if hm[0:n] == msgAuthenticationParameters:
+      if hm[0:n//2] == msgAuthenticationParametersBytes:
          return([passphrase,"SHA-224"])
 
-   n = 24 
+   n = 24
    if msgAuthenticationParametersLength == n and hashType in {'sha', 'all', 'rfc3414'}:
 
       # Calculate AuthKey and extendedAuthKey
@@ -238,10 +238,10 @@ def check_password(passphrase):
       sha_K2 = (int(sha_extendedAuthKey, 16) ^ opad_int).to_bytes(64,"big")
 
       sha_hashK1 = hashlib.sha1(sha_K1+wholeMsgMod[n]).digest()
-      sha_hashK2 = hashlib.sha1(sha_K2+sha_hashK1).hexdigest()
+      sha_hashK2 = hashlib.sha1(sha_K2+sha_hashK1).digest()
 
       # Check if calculated value equals msgAuthenticationParameters
-      if sha_hashK2[0:24] == msgAuthenticationParameters:
+      if sha_hashK2[0:n//2] == msgAuthenticationParametersBytes:
          return([passphrase,"SHA"])
 
    if msgAuthenticationParametersLength == n and hashType in {'md5', 'all', 'rfc3414'}:
@@ -256,10 +256,11 @@ def check_password(passphrase):
       md5_K2 = (int(md5_extendedAuthKey, 16) ^ opad_int).to_bytes(64,"big")
 
       md5_hashK1 = hashlib.md5(md5_K1+wholeMsgMod[n]).digest()
-      md5_hashK2 = hashlib.md5(md5_K2+md5_hashK1).hexdigest()
-
+      # md5_hashK2 = hashlib.md5(md5_K2+md5_hashK1).hexdigest()
+      md5_hashK2 = hashlib.md5(md5_K2+md5_hashK1).digest()
+      
       # Check if calculated value equals msgAuthenticationParameters
-      if md5_hashK2[0:24] == msgAuthenticationParameters:
+      if md5_hashK2[0:n//2] == msgAuthenticationParametersBytes:
          return([passphrase,"MD5"])
 
 def printBanner():
@@ -280,6 +281,7 @@ def main():
    global packetNumber
    global msgAuthenticationParameters
    global msgAuthenticationParametersLength
+   global msgAuthenticationParametersBytes
    global msgAuthoritativeEngineID
    global wholeMsg
    global wholeMsgMod
@@ -363,6 +365,8 @@ def main():
       for i in [24, 32, 48, 64, 96]:
          wholeMsgMod[i] = unhexlify(wholeMsg.replace(msgAuthenticationParameters,'0'*i))
       msgAuthenticationParametersLength = len(msgAuthenticationParameters)
+      msgAuthenticationParametersBytes = bytes.fromhex(msgAuthenticationParameters)
+
       E = unhexlify(msgAuthoritativeEngineID)
 
       startTime = time.time()
