@@ -386,7 +386,7 @@ def main():
 
       if not args.hashes:
          print(" {} {} {} {} {} {} ".format(str(t[6]).zfill(2)," "*(int(lenID)-len(str(t[6]).zfill(2))+1),t[0]," "*(int(lenIP)-len(t[0])+1),t[2]," "*(int(lenUN)-len(t[2])+1)), end='') 
-         print((color.YELLOW+"{}       Trying..."+color.END).format(hashType.upper()), end='\r')
+         print((color.YELLOW+"{}Trying..."+color.END).format(hashType.upper().ljust(7+3)), end='\r')
 
       if args.hashes:
         extract_hashes()
