@@ -135,27 +135,23 @@ def extract_hashes():
 
    if n == 96:
        if hashType in {'sha-512', 'all'}:
-          tmp_wholeMsgMod = unhexlify(wholeMsg.replace(msgAuthenticationParameters,'0'*n))
-          print("{}:$SNMPv3$6${}${}${}${}".format(snmpUser,packetNumber,hexlify(tmp_wholeMsgMod).decode('utf-8'),msgAuthoritativeEngineID,msgAuthenticationParameters))
+          print("{}:$SNMPv3$6${}${}${}${}".format(snmpUser,packetNumber,hexlify(wholeMsgMod[n]).decode('utf-8'),msgAuthoritativeEngineID,msgAuthenticationParameters))
    elif n == 64:
        if hashType in {'sha-384', 'all'}:
-          tmp_wholeMsgMod = unhexlify(wholeMsg.replace(msgAuthenticationParameters,'0'*n))
-          print("{}:$SNMPv3$5${}${}${}${}".format(snmpUser,packetNumber,hexlify(tmp_wholeMsgMod).decode('utf-8'),msgAuthoritativeEngineID,msgAuthenticationParameters))
+          print("{}:$SNMPv3$5${}${}${}${}".format(snmpUser,packetNumber,hexlify(wholeMsgMod[n]).decode('utf-8'),msgAuthoritativeEngineID,msgAuthenticationParameters))
    elif n == 48:
        if hashType in {'sha-256', 'all'}:
-          tmp_wholeMsgMod = unhexlify(wholeMsg.replace(msgAuthenticationParameters,'0'*n))
-          print("{}:$SNMPv3$4${}${}${}${}".format(snmpUser,packetNumber,hexlify(tmp_wholeMsgMod).decode('utf-8'),msgAuthoritativeEngineID,msgAuthenticationParameters))
+          print("{}:$SNMPv3$4${}${}${}${}".format(snmpUser,packetNumber,hexlify(wholeMsgMod[n]).decode('utf-8'),msgAuthoritativeEngineID,msgAuthenticationParameters))
    elif n == 32:
        if hashType in {'sha-224', 'all'}:
-          tmp_wholeMsgMod = unhexlify(wholeMsg.replace(msgAuthenticationParameters,'0'*n))
-          print("{}:$SNMPv3$3${}${}${}${}".format(snmpUser,packetNumber,hexlify(tmp_wholeMsgMod).decode('utf-8'),msgAuthoritativeEngineID,msgAuthenticationParameters))
+          print("{}:$SNMPv3$3${}${}${}${}".format(snmpUser,packetNumber,hexlify(wholeMsgMod[n]).decode('utf-8'),msgAuthoritativeEngineID,msgAuthenticationParameters))
    elif n == 24:
        if hashType == 'all':
-          print("{}:$SNMPv3$0${}${}${}${}".format(snmpUser,packetNumber,hexlify(wholeMsgMod).decode('utf-8'),msgAuthoritativeEngineID,msgAuthenticationParameters))
+          print("{}:$SNMPv3$0${}${}${}${}".format(snmpUser,packetNumber,hexlify(wholeMsgMod[n]).decode('utf-8'),msgAuthoritativeEngineID,msgAuthenticationParameters))
        elif hashType == 'sha':
-          print("{}:$SNMPv3$2${}${}${}${}".format(snmpUser,packetNumber,hexlify(wholeMsgMod).decode('utf-8'),msgAuthoritativeEngineID,msgAuthenticationParameters))
+          print("{}:$SNMPv3$2${}${}${}${}".format(snmpUser,packetNumber,hexlify(wholeMsgMod[n]).decode('utf-8'),msgAuthoritativeEngineID,msgAuthenticationParameters))
        elif hashType == 'md5':
-          print("{}:$SNMPv3$1${}${}${}${}".format(snmpUser,packetNumber,hexlify(wholeMsgMod).decode('utf-8'),msgAuthoritativeEngineID,msgAuthenticationParameters))
+          print("{}:$SNMPv3$1${}${}${}${}".format(snmpUser,packetNumber,hexlify(wholeMsgMod[n]).decode('utf-8'),msgAuthoritativeEngineID,msgAuthenticationParameters))
    elif args.verbose:
        print("! Unknown hash format, skipping...")
 
@@ -167,24 +163,22 @@ def check_password(passphrase):
 
    data = ((passphrase * (l//len(passphrase)+1))[:l]).encode('latin-1')
 
-   if hashType in {'sha-512', 'all', 'rfc7860'}:
-      n=96
+   n = 96
+   if hashType in {'sha-512', 'all', 'rfc7860'} and msgAuthenticationParametersLength == n:
 
       # Calculate AuthKey and extendedAuthKey
       sha512_digest1 = hashlib.sha512(data).digest()
 
       sha512_AuthKey = hashlib.sha512(sha512_digest1+E+sha512_digest1).digest()
 
-      tmp_wholeMsgMod = unhexlify(wholeMsg.replace(msgAuthenticationParameters,'0'*n))
-
-      hm = hmac.new(sha512_AuthKey, tmp_wholeMsgMod, digestmod=hashlib.sha512).hexdigest()
+      hm = hmac.new(sha512_AuthKey, wholeMsgMod[n], digestmod=hashlib.sha512).hexdigest()
 
       # Check if calculated value equals msgAuthenticationParameters (48*2)
       if hm[0:n] == msgAuthenticationParameters:
          return([passphrase,"SHA-512"])
 
-   if hashType in {'sha-384', 'all', 'rfc7860'}:
-      n=64
+   n = 64 
+   if hashType in {'sha-384', 'all', 'rfc7860'} and msgAuthenticationParametersLength == n:
 
       # Calculate AuthKey and extendedAuthKey
       sha384_digest1 = hashlib.sha384(data).digest()
@@ -199,8 +193,8 @@ def check_password(passphrase):
       if hm[0:n] == msgAuthenticationParameters:
          return([passphrase,"SHA-384"])
 
-   if hashType in {'sha-256', 'all', 'rfc7860'}:
-      n=48
+   n = 48
+   if hashType in {'sha-256', 'all', 'rfc7860'} and msgAuthenticationParametersLength == n:
 
       # Calculate AuthKey and extendedAuthKey
       sha256_digest1 = hashlib.sha256(data).digest()
@@ -215,8 +209,8 @@ def check_password(passphrase):
       if hm[0:n] == msgAuthenticationParameters:
          return([passphrase,"SHA-256"])
 
-   if hashType in {'sha-224', 'all', 'rfc7860'}:
-      n=32
+   n = 32
+   if hashType in {'sha-224', 'all', 'rfc7860'} and msgAuthenticationParametersLength == n:
 
       # Calculate AuthKey and extendedAuthKey
       sha224_digest1 = hashlib.sha224(data).digest()
@@ -231,7 +225,9 @@ def check_password(passphrase):
       if hm[0:n] == msgAuthenticationParameters:
          return([passphrase,"SHA-224"])
 
-   if hashType in {'sha', 'all', 'rfc3414'}:
+   n = 24 
+   if hashType in {'sha', 'all', 'rfc3414'} and msgAuthenticationParametersLength == n:
+
       # Calculate AuthKey and extendedAuthKey
       sha_digest1 = hashlib.sha1(data).digest()
       sha_AuthKey = hashlib.sha1(sha_digest1+E+sha_digest1).hexdigest()
@@ -241,14 +237,15 @@ def check_password(passphrase):
       sha_K1 = (int(sha_extendedAuthKey, 16) ^ ipad_int).to_bytes(64,"big")
       sha_K2 = (int(sha_extendedAuthKey, 16) ^ opad_int).to_bytes(64,"big")
 
-      sha_hashK1 = hashlib.sha1(sha_K1+wholeMsgMod).digest()
+      sha_hashK1 = hashlib.sha1(sha_K1+wholeMsgMod[n]).digest()
       sha_hashK2 = hashlib.sha1(sha_K2+sha_hashK1).hexdigest()
 
       # Check if calculated value equals msgAuthenticationParameters
       if sha_hashK2[0:24] == msgAuthenticationParameters:
          return([passphrase,"SHA"])
 
-   if hashType in {'md5', 'all', 'rfc3414'}:
+   if hashType in {'md5', 'all', 'rfc3414'} and msgAuthenticationParametersLength == n:
+
       # Calculate AuthKey and extendedAuthKey
       md5_digest1 = hashlib.md5(data).digest()
       md5_AuthKey = hashlib.md5(md5_digest1+E+md5_digest1).hexdigest()
@@ -258,7 +255,7 @@ def check_password(passphrase):
       md5_K1 = (int(md5_extendedAuthKey, 16) ^ ipad_int).to_bytes(64,"big")
       md5_K2 = (int(md5_extendedAuthKey, 16) ^ opad_int).to_bytes(64,"big")
 
-      md5_hashK1 = hashlib.md5(md5_K1+wholeMsgMod).digest()
+      md5_hashK1 = hashlib.md5(md5_K1+wholeMsgMod[n]).digest()
       md5_hashK2 = hashlib.md5(md5_K2+md5_hashK1).hexdigest()
 
       # Check if calculated value equals msgAuthenticationParameters
@@ -282,6 +279,7 @@ def main():
    global snmpUser
    global packetNumber
    global msgAuthenticationParameters
+   global msgAuthenticationParametersLength
    global msgAuthoritativeEngineID
    global wholeMsg
    global wholeMsgMod
@@ -354,15 +352,18 @@ def main():
    # Process tasks and print results
    for t in taskList:
       keepTrying = True
-
       snmpUser                    = str(t[2])
       msgAuthoritativeEngineID    = str(t[3])
       msgAuthenticationParameters = str(t[4])
       wholeMsg                    = str(t[5])
-      wholeMsgMod                 = unhexlify(wholeMsg.replace(msgAuthenticationParameters,'0'*24))
       packetNumber                = str(t[7])
 
       # Precalculation to avoid repetition in check_password()
+      wholeMsgMod = {}
+      for i in [24, 32, 48, 64, 96]:
+         wholeMsgMod[i] = unhexlify(wholeMsg.replace(msgAuthenticationParameters,'0'*i))
+      msgAuthenticationParametersLength = len(msgAuthenticationParameters)
+
       E = unhexlify(msgAuthoritativeEngineID)
 
       startTime = time.time()
