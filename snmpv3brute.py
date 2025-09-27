@@ -350,7 +350,7 @@ def main():
 
    if not args.hashes:
       # Print tasklist header
-      print(color.BOLD+"\nTasks to be processed:"+color.END)
+      print(color.BOLD+"\nTasks to be processed with algorithm(s): "+hashType+color.END)
       print(" ID {} IP address {} Username".format(" "*(1+int(lenID)-2)," "*(1+(int(lenIP))-10)))
       print("{} {} {}".format("-"*(int(lenID)+2),"-"*(int(lenIP)+2),"-"*(int(lenUN)+2)))
 
@@ -361,8 +361,8 @@ def main():
       ### Process tasklist items and print results
       # Print results header
       print(color.BOLD+"\nResults:"+color.END)
-      print(" ID {} IP address {} Username {} Alg   Password".format(" "*(1+int(lenID)-2)," "*(1+(int(lenIP))-10)," "*(1+(int(lenUN))-8)))
-      print("{} {} {} {} {}".format("-"*(int(lenID)+2),"-"*(int(lenIP)+2),"-"*(int(lenUN)+2),"-"*5,"-"*10))
+      print(" ID {} IP address {} Username {} Alg       Password".format(" "*(1+int(lenID)-2)," "*(1+(int(lenIP))-10)," "*(1+(int(lenUN))-8)))
+      print("{} {} {} {} {}".format("-"*(int(lenID)+2),"-"*(int(lenIP)+2),"-"*(int(lenUN)+2),"-"*9,"-"*10))
 
    # Process tasks and print results
    for t in taskList:
@@ -386,7 +386,7 @@ def main():
 
       if not args.hashes:
          print(" {} {} {} {} {} {} ".format(str(t[6]).zfill(2)," "*(int(lenID)-len(str(t[6]).zfill(2))+1),t[0]," "*(int(lenIP)-len(t[0])+1),t[2]," "*(int(lenUN)-len(t[2])+1)), end='') 
-         print((color.YELLOW+"{}   Trying..."+color.END).format(hashType.upper()), end='\r')
+         print((color.YELLOW+"{}       Trying..."+color.END).format(hashType.upper()), end='\r')
 
       if args.hashes:
         extract_hashes()
@@ -405,7 +405,7 @@ def main():
                endTime = time.time()
                # Print current task findings
                print(" {} {} {} {} {} {} ".format(str(t[6]).zfill(2)," "*(int(lenID)-len(str(t[6]).zfill(2))+1),t[0]," "*(int(lenIP)-len(t[0])+1),t[2]," "*(int(lenUN)-len(t[2])+1)), end='') 
-               print((color.GREEN+"{}   {}"+color.END+" ({:.2f}s)").format(passwordFound[1],str(passwordFound[0]),endTime-startTime)) 
+               print((color.GREEN+"{}{}"+color.END+" ({:.2f}s)").format(passwordFound[1].ljust(7+3),str(passwordFound[0]),endTime-startTime)) 
                break
 
       # Check words in wordlist, if supplied
@@ -424,7 +424,7 @@ def main():
                   pool.terminate()
                   # Print current task findings
                   print(" {} {} {} {} {} {} ".format(str(t[6]).zfill(2)," "*(int(lenID)-len(str(t[6]).zfill(2))+1),t[0]," "*(int(lenIP)-len(t[0])+1),t[2]," "*(int(lenUN)-len(t[2])+1)), end='') 
-                  print((color.GREEN+"{}   {}"+color.END+" ({:.2f}s)").format(passwordFound[1],str(passwordFound[0]),endTime-startTime)) 
+                  print((color.GREEN+"{}{}"+color.END+" ({:.2f}s)").format(passwordFound[1].ljust(7+3),str(passwordFound[0]),endTime-startTime)) 
                   break
 
       if not args.hashes:
@@ -432,7 +432,7 @@ def main():
             # Print current task not found
             endTime = time.time()
             print(" {} {} {} {} {} {} ".format(str(t[6]).zfill(2)," "*(int(lenID)-len(str(t[6]).zfill(2))+1),t[0]," "*(int(lenIP)-len(t[0])+1),t[2]," "*(int(lenUN)-len(t[2])+1)), end='') 
-            print((color.RED+"N/A   Not found"+color.END+" ({:.2f}s)").format(endTime-startTime))
+            print((color.RED+"N/A       Not found"+color.END+" ({:.2f}s)").format(endTime-startTime))
 
    if not args.hashes:
       print("")
